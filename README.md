@@ -1,5 +1,7 @@
 # Tokio / Serde bindings for bincode
 
+[![Build Status](https://travis-ci.org/alexcrichton/tokio-serde-bincode.svg?branch=master)](https://travis-ci.org/alexcrichton/tokio-serde-bincode)
+
 Utilities needed to easily implement a Tokio [Bincode] transport using [serde]
 for serialization and deserialization of frame values.
 
