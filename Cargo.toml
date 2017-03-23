@@ -1,0 +1,12 @@
+[package]
+name = "tokio-serde-bincode"
+version = "0.1.0"
+authors = ["Carl Lerche <me@carllerche.com>",
+           "Alex Crichton <alex@alexcrichton.com>"]
+
+[dependencies]
+futures = "0.1"
+bytes = "0.4"
+tokio-serde = { git = "https://github.com/carllerche/tokio-serde" }
+serde = "0.9"
+bincode = { git = 'https://github.com/TyOverby/bincode' }
