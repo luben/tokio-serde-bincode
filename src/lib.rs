@@ -54,7 +54,7 @@ struct Bincode<T> {
 
 impl<T, U> ReadBincode<T, U>
     where T: Stream<Error = io::Error>,
-          U: Deserialize,
+          U: for<'de> Deserialize<'de>,
           Bytes: From<T::Item>,
 {
     /// Creates a new `ReadBincode` with the given buffer stream.
@@ -96,7 +96,7 @@ impl<T, U> ReadBincode<T, U> {
 
 impl<T, U> Stream for ReadBincode<T, U>
     where T: Stream<Error = io::Error>,
-          U: Deserialize,
+          U: for<'de> Deserialize<'de>,
           Bytes: From<T::Item>,
 {
     type Item = U;
@@ -196,7 +196,9 @@ impl<T, U> Stream for WriteBincode<T, U>
     }
 }
 
-impl<T: Deserialize> Deserializer<T> for Bincode<T> {
+impl<T> Deserializer<T> for Bincode<T>
+    where T: for<'de> Deserialize<'de>
+{
     type Error = Error;
 
     fn deserialize(&mut self, src: &Bytes) -> Result<T, Error> {
