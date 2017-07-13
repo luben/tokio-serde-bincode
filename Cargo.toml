@@ -3,6 +3,15 @@ name = "tokio-serde-bincode"
 version = "0.1.0"
 authors = ["Carl Lerche <me@carllerche.com>",
            "Alex Crichton <alex@alexcrichton.com>"]
+license = "MIT/Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/alexcrichton/tokio-serde-bincode"
+homepage = "https://github.com/alexcrichton/tokio-serde-bincode"
+documentation = "https://docs.rs/tokio-serde-bincode"
+description = """
+Tokio bindings to quickly turn a stream of bytes to a stream of
+parsed/serialized items using the bincode format.
+"""
 
 [dependencies]
 futures = "0.1"
