@@ -7,6 +7,6 @@ authors = ["Carl Lerche <me@carllerche.com>",
 [dependencies]
 futures = "0.1"
 bytes = "0.4"
-tokio-serde = { git = "https://github.com/carllerche/tokio-serde" }
+tokio-serde = "0.1"
 serde = "1.0"
 bincode = "0.8"
