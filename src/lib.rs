@@ -25,7 +25,6 @@ use serde::{Serialize, Deserialize};
 use bincode::Error;
 use tokio_serde::{Serializer, Deserializer, FramedRead, FramedWrite};
 
-use std::io;
 use std::marker::PhantomData;
 
 /// Adapts a stream of Bincode encoded buffers to a stream of values by
@@ -53,7 +52,8 @@ struct Bincode<T> {
 }
 
 impl<T, U> ReadBincode<T, U>
-    where T: Stream<Error = io::Error>,
+    where T: Stream,
+          T::Error: From<Error>,
           U: for<'de> Deserialize<'de>,
           Bytes: From<T::Item>,
 {
@@ -95,14 +95,15 @@ impl<T, U> ReadBincode<T, U> {
 }
 
 impl<T, U> Stream for ReadBincode<T, U>
-    where T: Stream<Error = io::Error>,
+    where T: Stream,
+          T::Error: From<Error>,
           U: for<'de> Deserialize<'de>,
           Bytes: From<T::Item>,
 {
     type Item = U;
-    type Error = Error;
+    type Error = <T as Stream>::Error;
 
-    fn poll(&mut self) -> Poll<Option<U>, Error> {
+    fn poll(&mut self) -> Poll<Option<U>, Self::Error> {
         self.inner.poll()
     }
 }
@@ -128,7 +129,8 @@ impl<T, U> Sink for ReadBincode<T, U>
 }
 
 impl<T, U> WriteBincode<T, U>
-    where T: Sink<SinkItem = BytesMut, SinkError = io::Error>,
+    where T: Sink<SinkItem = BytesMut>,
+          T::SinkError: From<Error>,
           U: Serialize,
 {
     /// Creates a new `WriteBincode` with the given buffer sink.
@@ -166,21 +168,22 @@ impl<T: Sink, U> WriteBincode<T, U> {
 }
 
 impl<T, U> Sink for WriteBincode<T, U>
-    where T: Sink<SinkItem = BytesMut, SinkError = io::Error>,
+    where T: Sink<SinkItem = BytesMut>,
+          T::SinkError: From<Error>,
           U: Serialize,
 {
     type SinkItem = U;
-    type SinkError = io::Error;
+    type SinkError = <T as Sink>::SinkError;
 
-    fn start_send(&mut self, item: U) -> StartSend<U, io::Error> {
+    fn start_send(&mut self, item: U) -> StartSend<U, Self::SinkError> {
         self.inner.start_send(item)
     }
 
-    fn poll_complete(&mut self) -> Poll<(), io::Error> {
+    fn poll_complete(&mut self) -> Poll<(), Self::SinkError> {
         self.inner.poll_complete()
     }
 
-    fn close(&mut self) -> Poll<(), io::Error> {
+    fn close(&mut self) -> Poll<(), Self::SinkError> {
         self.inner.poll_complete()
     }
 }
@@ -207,11 +210,10 @@ impl<T> Deserializer<T> for Bincode<T>
 }
 
 impl<T: Serialize> Serializer<T> for Bincode<T> {
-    type Error = io::Error;
+    type Error = Error;
 
-    fn serialize(&mut self, item: &T) -> Result<BytesMut, io::Error> {
+    fn serialize(&mut self, item: &T) -> Result<BytesMut, Self::Error> {
         bincode::serialize(item, bincode::Infinite)
             .map(Into::into)
-            .map_err(|e| io::Error::new(io::ErrorKind::Other, e))
     }
 }
