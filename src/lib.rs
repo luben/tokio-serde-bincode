@@ -13,17 +13,17 @@
 //! [tokio-io]: http://github.com/alexcrichton/tokio-io
 //! [examples]: https://github.com/carllerche/tokio-serde-json/tree/master/examples
 
-extern crate futures;
-extern crate bytes;
-extern crate serde;
 extern crate bincode;
+extern crate bytes;
+extern crate futures;
+extern crate serde;
 extern crate tokio_serde;
 
-use futures::{Stream, Poll, Sink, StartSend};
-use bytes::{Bytes, BytesMut};
-use serde::{Serialize, Deserialize};
 use bincode::Error;
-use tokio_serde::{Serializer, Deserializer, FramedRead, FramedWrite};
+use bytes::{Bytes, BytesMut};
+use futures::{Poll, Sink, StartSend, Stream};
+use serde::{Deserialize, Serialize};
+use tokio_serde::{Deserializer, FramedRead, FramedWrite, Serializer};
 
 use std::marker::PhantomData;
 
@@ -52,15 +52,18 @@ struct Bincode<T> {
 }
 
 impl<T, U> ReadBincode<T, U>
-    where T: Stream,
-          T::Error: From<Error>,
-          U: for<'de> Deserialize<'de>,
-          Bytes: From<T::Item>,
+where
+    T: Stream,
+    T::Error: From<Error>,
+    U: for<'de> Deserialize<'de>,
+    BytesMut: From<T::Item>,
 {
     /// Creates a new `ReadBincode` with the given buffer stream.
     pub fn new(inner: T) -> ReadBincode<T, U> {
         let json = Bincode { ghost: PhantomData };
-        ReadBincode { inner: FramedRead::new(inner, json) }
+        ReadBincode {
+            inner: FramedRead::new(inner, json),
+        }
     }
 }
 
@@ -95,10 +98,11 @@ impl<T, U> ReadBincode<T, U> {
 }
 
 impl<T, U> Stream for ReadBincode<T, U>
-    where T: Stream,
-          T::Error: From<Error>,
-          U: for<'de> Deserialize<'de>,
-          Bytes: From<T::Item>,
+where
+    T: Stream,
+    T::Error: From<Error>,
+    U: for<'de> Deserialize<'de>,
+    BytesMut: From<T::Item>,
 {
     type Item = U;
     type Error = <T as Stream>::Error;
@@ -109,13 +113,13 @@ impl<T, U> Stream for ReadBincode<T, U>
 }
 
 impl<T, U> Sink for ReadBincode<T, U>
-    where T: Sink,
+where
+    T: Sink,
 {
     type SinkItem = T::SinkItem;
     type SinkError = T::SinkError;
 
-    fn start_send(&mut self, item: T::SinkItem)
-                  -> StartSend<T::SinkItem, T::SinkError> {
+    fn start_send(&mut self, item: T::SinkItem) -> StartSend<T::SinkItem, T::SinkError> {
         self.get_mut().start_send(item)
     }
 
@@ -129,14 +133,17 @@ impl<T, U> Sink for ReadBincode<T, U>
 }
 
 impl<T, U> WriteBincode<T, U>
-    where T: Sink<SinkItem = BytesMut>,
-          T::SinkError: From<Error>,
-          U: Serialize,
+where
+    T: Sink<SinkItem = Bytes>,
+    T::SinkError: From<Error>,
+    U: Serialize,
 {
     /// Creates a new `WriteBincode` with the given buffer sink.
     pub fn new(inner: T) -> WriteBincode<T, U> {
         let json = Bincode { ghost: PhantomData };
-        WriteBincode { inner: FramedWrite::new(inner, json) }
+        WriteBincode {
+            inner: FramedWrite::new(inner, json),
+        }
     }
 }
 
@@ -168,9 +175,10 @@ impl<T: Sink, U> WriteBincode<T, U> {
 }
 
 impl<T, U> Sink for WriteBincode<T, U>
-    where T: Sink<SinkItem = BytesMut>,
-          T::SinkError: From<Error>,
-          U: Serialize,
+where
+    T: Sink<SinkItem = Bytes>,
+    T::SinkError: From<Error>,
+    U: Serialize,
 {
     type SinkItem = U;
     type SinkError = <T as Sink>::SinkError;
@@ -189,7 +197,8 @@ impl<T, U> Sink for WriteBincode<T, U>
 }
 
 impl<T, U> Stream for WriteBincode<T, U>
-    where T: Stream + Sink,
+where
+    T: Stream + Sink,
 {
     type Item = T::Item;
     type Error = T::Error;
@@ -200,11 +209,12 @@ impl<T, U> Stream for WriteBincode<T, U>
 }
 
 impl<T> Deserializer<T> for Bincode<T>
-    where T: for<'de> Deserialize<'de>
+where
+    T: for<'de> Deserialize<'de>,
 {
     type Error = Error;
 
-    fn deserialize(&mut self, src: &Bytes) -> Result<T, Error> {
+    fn deserialize(&mut self, src: &BytesMut) -> Result<T, Error> {
         bincode::deserialize(src)
     }
 }
@@ -212,8 +222,7 @@ impl<T> Deserializer<T> for Bincode<T>
 impl<T: Serialize> Serializer<T> for Bincode<T> {
     type Error = Error;
 
-    fn serialize(&mut self, item: &T) -> Result<BytesMut, Self::Error> {
-        bincode::serialize(item, bincode::Infinite)
-            .map(Into::into)
+    fn serialize(&mut self, item: &T) -> Result<Bytes, Self::Error> {
+        bincode::serialize(item).map(Into::into)
     }
 }
