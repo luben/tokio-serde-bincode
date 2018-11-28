@@ -1,13 +1,15 @@
 # Tokio / Serde bindings for bincode
 
-[![Build Status](https://travis-ci.org/alexcrichton/tokio-serde-bincode.svg?branch=master)](https://travis-ci.org/alexcrichton/tokio-serde-bincode)
+[![Build Status](https://travis-ci.org/luben/tokio-serde-bincode.svg?branch=master)](https://travis-ci.org/luben/tokio-serde-bincode)
+[![crates.io](https://meritbadge.herokuapp.com/tokio-serde-bincode)](https://crates.io/crates/tokio-serde-bincode)
+[![Docs](https://docs.rs/tokio-serde-bincode/badge.svg)](https://docs.rs/tokio-serde-bincode)
 
 Utilities needed to easily implement a Tokio [Bincode] transport using [serde]
-for serialization and deserialization of frame values.
-
-[Documentation](http://alexcrichton.com/tokio-serde-bincode)
+for serialization and deserialization of frame values. Based on [tokio-serde].
 
 [bincode]: https://github.com/TyOverby/bincode
+[serde]: https://serde.rs
+[tokio-serde]: https://github.com/carllerche/tokio-serde
 
 ## Usage
 
@@ -15,7 +17,7 @@ To use `tokio-serde-bincode`, first add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-tokio-serde-bincode = { git = "https://github.com/alexcrichton/tokio-serde-bincode" }
+tokio-serde-bincode = "0.2"
 ```
 
 Next, add this to your crate:
@@ -25,8 +27,6 @@ extern crate tokio_serde_bincode;
 
 use tokio_serde_bincode::{ReadBincode, WriteBincode};
 ```
-
-[serde]: https://serde.rs
 
 # License
 
