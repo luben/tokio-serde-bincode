@@ -3,7 +3,8 @@ name = "tokio-serde-bincode"
 version = "0.2.0"
 authors = ["Carl Lerche <me@carllerche.com>",
            "Alex Crichton <alex@alexcrichton.com>",
-            "Luben Karavelov <karavelov@gmail.com>"]
+           "Antoni Boucher <bouanto@zoho.com>",
+           "Luben Karavelov <karavelov@gmail.com>"]
 license = "MIT/Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/luben/tokio-serde-bincode"
@@ -20,3 +21,7 @@ bytes = "0.4"
 tokio-serde = "0.3"
 serde = "1.0"
 bincode = "1.0"
+
+[dev-dependencies]
+serde_derive = "1"
+tokio = "0.1"
