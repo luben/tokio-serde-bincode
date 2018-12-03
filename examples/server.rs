@@ -11,6 +11,9 @@ use tokio_serde_bincode::ReadBincode;
 
 #[derive(Debug, Deserialize, Serialize)]
 struct Data {
+    #[cfg(i128)]
+    field: i128,
+    #[cfg(not(i128))]
     field: i32,
 }
 

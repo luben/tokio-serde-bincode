@@ -12,6 +12,9 @@ before_script:
 script:
   - cargo build
   - cargo test
+  - cargo test --examples
+  - cargo test --features "i128"
+  - cargo test --examples --features "i128"
   - cargo doc --no-deps
 
 notifications:
