@@ -1,6 +1,6 @@
 [package]
 name = "tokio-serde-bincode"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Carl Lerche <me@carllerche.com>",
            "Alex Crichton <alex@alexcrichton.com>",
            "Antoni Boucher <bouanto@zoho.com>",
