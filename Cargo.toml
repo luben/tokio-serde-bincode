@@ -22,6 +22,9 @@ tokio-serde = "0.3"
 serde = "1.0"
 bincode = "1.0"
 
+[features]
+i128 = ["bincode/i128"]
+
 [dev-dependencies]
 serde_derive = "1"
 tokio = "0.1"
