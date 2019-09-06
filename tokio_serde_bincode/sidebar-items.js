@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["ReadBincode","Adapts a stream of Bincode encoded buffers to a stream of values by deserializing them."],["WriteBincode","Adapts a buffer sink to a value sink by serializing the values as Bincode."]]});
