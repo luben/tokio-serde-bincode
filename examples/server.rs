@@ -28,7 +28,7 @@ type BincodeErrStream = stream::FromErr<IOErrorStream, bincode::Error>;
 // ReadBincode maps underlying bytes into Bincode-deserializable structs
 type BincodeStream = ReadBincode<BincodeErrStream, Data>;
 
-pub fn main() -> Result<(), Box<std::error::Error>> {
+pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     let addr = "127.0.0.1:17653".parse().unwrap();
 
     // Bind a server socket
