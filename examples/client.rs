@@ -28,7 +28,7 @@ type BincodeErrSink = sink::SinkFromErr<IOErrorSink, bincode::Error>;
 // WriteBincode maps Bincode-serializeable structs into bytes
 type BincodeSink = WriteBincode<BincodeErrSink, Data>;
 
-pub fn main() -> Result<(), Box<std::error::Error>> {
+pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     let addr = "127.0.0.1:17653".parse()?;
 
     // Bind a server socket
