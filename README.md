@@ -11,6 +11,15 @@ for serialization and deserialization of frame values. Based on [tokio-serde].
 [serde]: https://serde.rs
 [tokio-serde]: https://github.com/carllerche/tokio-serde
 
+## Async/Await
+
+Tokio-0.2 and later versions have migrated to the `std::future` trait. This crate
+is based on tokio-0.1 and the out of std `futures` crate. [tokio-serde] v0.6
+already supports [Bincode] and other serialization formats behind Cargo features.
+So in order not to duplicate efforts, any new use and development should be based on
+[tokio-serde]. This crate is going to receive only fixes for security issues, if any
+is found.
+
 ## Usage
 
 To use `tokio-serde-bincode`, first add this to your `Cargo.toml`:
